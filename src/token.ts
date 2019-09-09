@@ -59,50 +59,33 @@ function encrypt(num, key) {
 // END
 /* eslint-enable */
 
-let TKK = '.';
-
 async function getTKK(opts) {
     opts = opts || {};
 
-    const now = Math.floor(Date.now() / 3600000);
-
-    if (Number(TKK.split('.')[0]) === now) {
-        return TKK;
-    } else {
-        const reqOpts = {
-            method: 'get',
-            url: 'https://translate.google.' + (opts.tld || 'com'),
-            ...opts.config
-        }
-
-        if (opts.proxy) {
-            reqOpts.proxy = `http://${opts.proxy.host}:${opts.proxy.port}`
-        }
-
-        reqOpts.headers = Object.assign({
-            'User-Agent': userAgent,
-        }, reqOpts.headers);
-
-        const res = await rp(reqOpts);
-
-        var matches = res.match(/tkk:\s?'(.+?)'/i);
-
-        if (matches) {
-            TKK = matches[1];
-        }
-
-        if (TKK.length > 1) {
-            /**
-             * Note: If the regex or the eval fail, there is no need to worry. The server will accept
-             * relatively old seeds.
-             */
-
-            return TKK
-        } else {
-            throw new Error('Cannot get TKK.')
-        }
-
+    const reqOpts = {
+        method: 'get',
+        url: 'https://translate.google.' + (opts.tld || 'com'),
+        ...opts.config
     }
+
+    if (opts.proxy) {
+        reqOpts.proxy = `http://${opts.proxy.host}:${opts.proxy.port}`
+    }
+
+    reqOpts.headers = Object.assign({
+        'User-Agent': userAgent,
+    }, reqOpts.headers);
+
+    const res = await rp(reqOpts);
+
+    var matches = res.match(/tkk:\s?'(.+?)'/i);
+
+    if (!matches) {
+        throw new Error('Cannot get TKK.')
+    }
+
+    const tkk = matches[1];
+    return tkk;
 }
 
 export async function getTK(text, opts) {
