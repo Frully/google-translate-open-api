@@ -1,15 +1,18 @@
 {
   "name": "@frully/google-translate-open-api",
-  "version": "1.4.2",
+  "version": "1.4.3",
   "description": "A free and unlimited API for Google Translate（contains single and multiple） 💵🚫",
   "main": "dist/index.js",
   "types": "types/index.d.ts",
   "scripts": {
     "pub": "npm run build && npm run update",
+    "prebuild": "npm run clean",
     "build": "tsc",
+    "clean": "rimraf dist",
     "update": "auto-vers -t",
     "test": "nyc mocha test/*.ts",
-    "cover": "nyc npm test && nyc report --reporter=text-lcov > coverage.lcov && codecov"
+    "cover": "nyc npm test && nyc report --reporter=text-lcov > coverage.lcov && codecov",
+    "prepare": "npm run build"
   },
   "repository": {
     "type": "git",
